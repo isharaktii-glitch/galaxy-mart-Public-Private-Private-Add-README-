@@ -6,6 +6,10 @@
       "destination": "/server.js"
     },
     {
+      "source": "/(.*)\\.html",
+      "destination": "/frontend/$1.html"
+    },
+    {
       "source": "/",
       "destination": "/frontend/index.html"
     },
