@@ -363,31 +363,39 @@ input:checked + .slider:before{transform:translateX(20px);}
 <script>
 
   async function saveCategory() {
-  const catName = document.getElementById('new-cat-name').value;
-  
-  if (!catName) {
-    alert("කරුණාකර Category නම ඇතුළත් කරන්න!");
+  const id = document.getElementById('cat-id').value;
+  const data = {
+    name_en: document.getElementById('cat-en').value,
+    name_si: document.getElementById('cat-si').value,
+    name_ta: document.getElementById('cat-ta').value
+  };
+
+  if (!data.name_en) {
+    alert("කරුණාකර Category නම (English) ඇතුළත් කරන්න!");
     return;
   }
 
   try {
-    // API එකට දත්ත යැවීම
-    const response = await fetch('/api/admin/categories', {
-      method: 'POST',
+    const url = id ? '/api/admin/categories/' + id : '/api/admin/categories';
+    const method = id ? 'PUT' : 'POST';
+
+    const response = await fetch(url, {
+      method: method,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + localStorage.getItem('gm_token') // ඉතා වැදගත්!
+        'Authorization': 'Bearer ' + localStorage.getItem('gm_token')
       },
-      body: JSON.stringify({ name: catName })
+      body: JSON.stringify(data)
     });
 
-    const data = await response.json();
+    const result = await response.json();
 
-    if (data.success) {
-      alert('Category සාර්ථකව ඇතුළත් විය!');
-      document.getElementById('new-cat-name').value = ''; // Input එක හිස් කිරීම
+    if (result.success) {
+      alert('Category සාර්ථකව සේව් විය!');
+      closeModal('catModal');
+      loadCategories(); // ලැයිස්තුව Refresh කිරීම
     } else {
-      alert('දෝෂයක් සිදුවිය: ' + (data.error || 'නැවත උත්සාහ කරන්න'));
+      alert('දෝෂයක් සිදුවිය: ' + (result.error || 'නැවත උත්සාහ කරන්න'));
     }
   } catch (err) {
     console.error('Error:', err);
@@ -395,41 +403,6 @@ input:checked + .slider:before{transform:translateX(20px);}
   }
 }
 
-  async function saveCategory() {
-    const catName = document.getElementById('new-cat-name').value;
-    
-    if(!catName) {
-        alert("Please enter a category name!");
-        return;
-    }
-
-    try {
-        const response = await fetch('/api/products/categories', { // ඔබේ API Endpoint එක පරීක්ෂා කරන්න
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('gm_token') // ටෝකන් එක යැවීම වැදගත්
-            },
-            body: JSON.stringify({ name_en: catName })
-        });
-
-        const data = await response.json();
-        
-        if(data.success) {
-            alert('Category added successfully!');
-            document.getElementById('new-cat-name').value = ''; // Input එක හිස් කරන්න
-            // loadCategories(); // ඔබේ list එක refresh කරන function එක මෙතන දාන්න
-        } else {
-            alert('Error: ' + (data.error || 'Could not save category'));
-        }
-    } catch(err) {
-        console.error('Error:', err);
-        alert('Something went wrong!');
-    }
-}
-
-
- 
 const API = '';
 const token = localStorage.getItem('gm_token');
 const user = JSON.parse(localStorage.getItem('gm_user') || '{}');
