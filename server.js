@@ -20,6 +20,8 @@ try {
   app.use('/api/customer', require('./routes/customer'));
   app.use('/api/products', require('./routes/products'));
   app.use('/api/orders', require('./routes/orders'));
+  app.use('/api/auctions', require('./routes/auction'));
+app.use('/api/ads', require('./routes/ads'));
 } catch(err) {
   console.error('Route error:', err.message);
 }
