@@ -101,7 +101,6 @@ footer{position:relative;z-index:5;text-align:center;padding:40px 20px;border-to
 </div>
 </div>
 
-<!-- LOGIN MODAL -->
 <div class="modal-overlay" id="loginModal">
 <div class="modal">
 <button class="close-btn" id="closeLogin">✕</button>
@@ -116,7 +115,6 @@ footer{position:relative;z-index:5;text-align:center;padding:40px 20px;border-to
 </div>
 </div>
 
-<!-- REGISTER MODAL -->
 <div class="modal-overlay" id="registerModal">
 <div class="modal">
 <button class="close-btn" id="closeRegister">✕</button>
@@ -145,7 +143,6 @@ footer{position:relative;z-index:5;text-align:center;padding:40px 20px;border-to
 </div>
 </div>
 
-<!-- FORGOT MODAL -->
 <div class="modal-overlay" id="forgotModal">
 <div class="modal">
 <button class="close-btn" id="closeForgot">✕</button>
@@ -171,7 +168,6 @@ footer{position:relative;z-index:5;text-align:center;padding:40px 20px;border-to
 const API = '';
 let forgotStep = 1;
 
-// Button event listeners — onclick වෙනුවට addEventListener
 document.getElementById('nav-login').addEventListener('click', () => openModal('loginModal'));
 document.getElementById('nav-register').addEventListener('click', () => openModal('registerModal'));
 document.getElementById('hero-start').addEventListener('click', () => openModal('registerModal'));
@@ -187,7 +183,6 @@ document.getElementById('login-btn').addEventListener('click', doLogin);
 document.getElementById('reg-btn').addEventListener('click', doRegister);
 document.getElementById('forgot-btn').addEventListener('click', doForgot);
 
-// Modal outside click close
 document.querySelectorAll('.modal-overlay').forEach(m => {
   m.addEventListener('click', e => { if(e.target === m) closeModal(m.id); });
 });
@@ -241,7 +236,7 @@ async function doLogin() {
       showMsg('login-msg', 'Login successful!', 'success');
       setTimeout(() => {
         const r = data.user.role;
-        window.location.href = r === 'admin' ? '/frontend/admin.html' : r === 'seller' ? '/frontend/seller.html' : '/frontend/customer.html';
+        window.location.href = r === 'admin' ? '/admin.html' : r === 'seller' ? '/seller.html' : '/customer.html';
       }, 800);
     } else {
       showMsg('login-msg', data.error || 'Login failed', 'error');
@@ -280,7 +275,7 @@ async function doRegister() {
       localStorage.setItem('gm_user', JSON.stringify(result.user));
       showMsg('reg-msg', 'Account created!', 'success');
       setTimeout(() => {
-        window.location.href = result.user.role === 'seller' ? '/frontend/seller.html' : '/frontend/customer.html';
+        window.location.href = result.user.role === 'seller' ? '/seller.html' : '/customer.html';
       }, 800);
     } else {
       showMsg('reg-msg', result.error || 'Registration failed', 'error');
@@ -336,7 +331,5 @@ async function doForgot() {
   }
 }
 </script>
-  <script src="auth.js"></script>
-
 </body>
 </html>
