@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0a1a">
 <title>Galaxy Mart</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 :root{
 --primary:#6c63ff;
 --secondary:#ff6584;
@@ -14,21 +15,26 @@
 --text:#fff;
 --muted:#8888aa;
 }
+html{
+scroll-behavior:auto !important;
+overflow-y:scroll !important;
+}
 body{
 background:var(--dark);
 color:var(--text);
 font-family:'Segoe UI',sans-serif;
 min-height:100vh;
 overflow-x:hidden;
+overflow-y:auto !important;
+position:relative !important;
+height:auto !important;
 }
-
-/* 3D Background */
 .bg-3d{
 position:fixed;top:0;left:0;width:100%;height:100%;
 background:radial-gradient(ellipse at 20% 50%,#1a0533 0%,transparent 50%),
 radial-gradient(ellipse at 80% 20%,#0d1f4d 0%,transparent 50%),
 radial-gradient(ellipse at 50% 80%,#0a1628 0%,transparent 50%);
-z-index:0;
+z-index:0;pointer-events:none;will-change:auto;
 }
 .stars{
 position:fixed;width:100%;height:100%;
@@ -42,11 +48,9 @@ radial-gradient(2px 2px at 250px 20px,#fff,transparent),
 radial-gradient(1px 1px at 300px 90px,rgba(255,255,255,0.5),transparent);
 background-size:350px 200px;
 animation:twinkle 4s infinite;
-z-index:0;
+z-index:0;pointer-events:none;will-change:auto;
 }
 @keyframes twinkle{0%,100%{opacity:1}50%{opacity:0.5}}
-
-/* NAV */
 nav{
 position:relative;z-index:10;
 display:flex;align-items:center;justify-content:space-between;
@@ -59,9 +63,8 @@ border-bottom:1px solid rgba(255,255,255,0.08);
 font-size:1.8rem;font-weight:800;
 background:linear-gradient(135deg,#6c63ff,#ff6584,#ffd700);
 -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-text-shadow:none;
 }
-.logo span{font-size:0.9rem;display:block;color:var(--muted);font-weight:400;}
+.logo span{font-size:0.9rem;display:block;color:var(--muted);font-weight:400;-webkit-text-fill-color:var(--muted);}
 .nav-btns{display:flex;gap:12px;}
 .btn{
 padding:10px 24px;border-radius:50px;border:none;
@@ -80,16 +83,13 @@ color:#fff;
 box-shadow:0 4px 20px rgba(108,99,255,0.4);
 }
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(108,99,255,0.6);}
-
-/* HERO */
 .hero{
 position:relative;z-index:5;
 text-align:center;padding:80px 20px 60px;
 }
 .hero h1{
 font-size:clamp(2rem,6vw,4rem);
-font-weight:900;line-height:1.1;
-margin-bottom:20px;
+font-weight:900;line-height:1.1;margin-bottom:20px;
 }
 .gradient-text{
 background:linear-gradient(135deg,#6c63ff 0%,#ff6584 50%,#ffd700 100%);
@@ -100,15 +100,13 @@ font-size:1.1rem;color:var(--muted);
 max-width:600px;margin:0 auto 40px;line-height:1.7;
 }
 .hero-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
-
-/* LANG SELECTOR */
 .lang-bar{
 position:relative;z-index:10;
-display:flex;justify-content:center;gap:8px;
-padding:12px;
+display:flex;justify-content:center;gap:8px;padding:12px;
 }
 .lang-btn{
-padding:6px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);
+padding:6px 16px;border-radius:20px;
+border:1px solid rgba(255,255,255,0.15);
 background:rgba(255,255,255,0.05);color:var(--muted);
 cursor:pointer;font-size:0.85rem;transition:all 0.3s;
 }
@@ -116,8 +114,6 @@ cursor:pointer;font-size:0.85rem;transition:all 0.3s;
 background:rgba(108,99,255,0.3);
 border-color:#6c63ff;color:#fff;
 }
-
-/* CARDS */
 .section{
 position:relative;z-index:5;
 padding:60px 20px;max-width:1200px;margin:0 auto;
@@ -150,13 +146,12 @@ border-color:rgba(108,99,255,0.4);
 .card-icon{font-size:2.5rem;margin-bottom:16px;}
 .card h3{font-size:1.3rem;margin-bottom:12px;}
 .card p{color:var(--muted);line-height:1.6;}
-
-/* MODAL */
 .modal-overlay{
 display:none;position:fixed;
 top:0;left:0;width:100%;height:100%;
 background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);
 z-index:1000;align-items:center;justify-content:center;
+overflow-y:auto;
 }
 .modal-overlay.show{display:flex;}
 .modal{
@@ -164,7 +159,7 @@ background:var(--card);
 border:1px solid rgba(255,255,255,0.1);
 border-radius:24px;padding:40px;
 width:90%;max-width:480px;
-position:relative;
+position:relative;margin:auto;
 box-shadow:0 40px 100px rgba(0,0,0,0.5);
 animation:slideUp 0.3s ease;
 }
@@ -184,8 +179,7 @@ font-size:1.5rem;cursor:pointer;
 .form-group{margin-bottom:16px;}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .form-group label{
-display:block;font-size:0.85rem;
-color:var(--muted);margin-bottom:6px;
+display:block;font-size:0.85rem;color:var(--muted);margin-bottom:6px;
 }
 .form-group input,.form-group select{
 width:100%;padding:12px 16px;
@@ -195,8 +189,7 @@ border-radius:12px;color:#fff;font-size:0.95rem;
 transition:all 0.3s;
 }
 .form-group input:focus,.form-group select:focus{
-outline:none;
-border-color:#6c63ff;
+outline:none;border-color:#6c63ff;
 box-shadow:0 0 0 3px rgba(108,99,255,0.2);
 }
 .form-group select option{background:var(--card);}
@@ -209,13 +202,10 @@ color:var(--muted);font-size:0.9rem;
 .switch-text a:hover{text-decoration:underline;}
 .msg{
 padding:12px 16px;border-radius:10px;
-margin-bottom:16px;font-size:0.9rem;
-display:none;
+margin-bottom:16px;font-size:0.9rem;display:none;
 }
 .msg.error{background:rgba(255,100,100,0.15);border:1px solid rgba(255,100,100,0.3);color:#ff6464;}
 .msg.success{background:rgba(100,255,150,0.15);border:1px solid rgba(100,255,150,0.3);color:#64ff96;}
-
-/* FOOTER */
 footer{
 position:relative;z-index:5;
 text-align:center;padding:40px 20px;
@@ -225,30 +215,23 @@ color:var(--muted);font-size:0.9rem;
 </style>
 </head>
 <body>
-
 <div class="bg-3d"></div>
 <div class="stars"></div>
 
-<!-- LANGUAGE BAR -->
 <div class="lang-bar">
 <button class="lang-btn active" onclick="setLang('en')">English</button>
 <button class="lang-btn" onclick="setLang('si')">සිංහල</button>
 <button class="lang-btn" onclick="setLang('ta')">தமிழ்</button>
 </div>
 
-<!-- NAV -->
 <nav>
-<div class="logo">
-Galaxy Mart
-<span>by Galaxy Workers</span>
-</div>
+<div class="logo">Galaxy Mart<span>by Galaxy Workers</span></div>
 <div class="nav-btns">
 <button class="btn btn-outline" onclick="showLogin()" id="nav-login">Login</button>
 <button class="btn btn-primary" onclick="showRegister()" id="nav-register">Register</button>
 </div>
 </nav>
 
-<!-- HERO -->
 <div class="hero">
 <h1><span class="gradient-text" id="hero-title">Sri Lanka's Smart Marketplace</span></h1>
 <p id="hero-sub">Buy, sell, and deliver — all in one platform. Join thousands of sellers and customers across Sri Lanka and worldwide.</p>
@@ -258,40 +241,15 @@ Galaxy Mart
 </div>
 </div>
 
-<!-- FEATURES -->
 <div class="section">
 <h2 class="section-title gradient-text" id="feat-title">Why Galaxy Mart?</h2>
 <div class="cards">
-<div class="card">
-<div class="card-icon">🛍️</div>
-<h3 id="f1-title">Multi-Vendor Market</h3>
-<p id="f1-sub">Thousands of sellers, millions of products. Find everything in one place.</p>
-</div>
-<div class="card">
-<div class="card-icon">🌍</div>
-<h3 id="f2-title">Diaspora Friendly</h3>
-<p id="f2-sub">Send gifts and groceries to your loved ones in Sri Lanka from anywhere in the world.</p>
-</div>
-<div class="card">
-<div class="card-icon">💰</div>
-<h3 id="f3-title">Earn as Reseller</h3>
-<p id="f3-sub">Join as a reseller and earn commission on every sale you refer.</p>
-</div>
-<div class="card">
-<div class="card-icon">🚚</div>
-<h3 id="f4-title">Fast Delivery</h3>
-<p id="f4-sub">Our delivery network covers all of Sri Lanka with real-time tracking.</p>
-</div>
-<div class="card">
-<div class="card-icon">🔒</div>
-<h3 id="f5-title">Secure & Verified</h3>
-<p id="f5-sub">KYC verified sellers and buyers for a safe trading experience.</p>
-</div>
-<div class="card">
-<div class="card-icon">📱</div>
-<h3 id="f6-title">Sinhala | Tamil | English</h3>
-<p id="f6-sub">Full trilingual support. Use Galaxy Mart in your preferred language.</p>
-</div>
+<div class="card"><div class="card-icon">🛍️</div><h3 id="f1-title">Multi-Vendor Market</h3><p id="f1-sub">Thousands of sellers, millions of products.</p></div>
+<div class="card"><div class="card-icon">🌍</div><h3 id="f2-title">Diaspora Friendly</h3><p id="f2-sub">Send gifts to loved ones in Sri Lanka from anywhere.</p></div>
+<div class="card"><div class="card-icon">💰</div><h3 id="f3-title">Earn as Reseller</h3><p id="f3-sub">Join as a reseller and earn commission on every sale.</p></div>
+<div class="card"><div class="card-icon">🚚</div><h3 id="f4-title">Fast Delivery</h3><p id="f4-sub">Our delivery network covers all of Sri Lanka.</p></div>
+<div class="card"><div class="card-icon">🔒</div><h3 id="f5-title">Secure & Verified</h3><p id="f5-sub">KYC verified sellers and buyers for safe trading.</p></div>
+<div class="card"><div class="card-icon">📱</div><h3 id="f6-title">Trilingual Support</h3><p id="f6-sub">Sinhala | Tamil | English — your language.</p></div>
 </div>
 </div>
 
@@ -311,12 +269,8 @@ Galaxy Mart
 <input type="password" id="login-password" placeholder="Enter password">
 </div>
 <button class="btn btn-primary btn-full" onclick="doLogin()" id="login-btn">Sign In</button>
-<p class="switch-text">
-<a onclick="showForgot()" id="forgot-link">Forgot password?</a>
-</p>
-<p class="switch-text" id="login-switch">
-Don't have an account? <a onclick="switchToRegister()">Register here</a>
-</p>
+<p class="switch-text"><a onclick="showForgot()" id="forgot-link">Forgot password?</a></p>
+<p class="switch-text" id="login-switch">Don't have an account? <a onclick="switchToRegister()">Register here</a></p>
 </div>
 </div>
 
@@ -328,73 +282,38 @@ Don't have an account? <a onclick="switchToRegister()">Register here</a>
 <p class="sub" id="reg-sub">Create your free account today</p>
 <div class="msg" id="reg-msg"></div>
 <div class="form-row">
-<div class="form-group">
-<label id="reg-fn">First Name</label>
-<input type="text" id="reg-firstname" placeholder="John">
+<div class="form-group"><label>First Name</label><input type="text" id="reg-firstname" placeholder="John"></div>
+<div class="form-group"><label>Last Name</label><input type="text" id="reg-lastname" placeholder="Silva"></div>
 </div>
+<div class="form-group"><label>Username</label><input type="text" id="reg-username" placeholder="johnsilva"></div>
+<div class="form-group"><label>Email</label><input type="email" id="reg-email" placeholder="john@email.com"></div>
+<div class="form-group"><label>Phone</label><input type="text" id="reg-phone" placeholder="+94771234567"></div>
+<div class="form-group"><label>WhatsApp</label><input type="text" id="reg-whatsapp" placeholder="+94771234567"></div>
+<div class="form-group"><label>Address</label><input type="text" id="reg-address" placeholder="Colombo, Sri Lanka"></div>
 <div class="form-group">
-<label id="reg-ln">Last Name</label>
-<input type="text" id="reg-lastname" placeholder="Silva">
-</div>
-</div>
-<div class="form-group">
-<label id="reg-un">Username</label>
-<input type="text" id="reg-username" placeholder="johnsilva">
-</div>
-<div class="form-group">
-<label id="reg-em">Email</label>
-<input type="email" id="reg-email" placeholder="john@email.com">
-</div>
-<div class="form-group">
-<label id="reg-ph">Phone Number</label>
-<input type="text" id="reg-phone" placeholder="+94771234567">
-</div>
-<div class="form-group">
-<label id="reg-wa">WhatsApp Number</label>
-<input type="text" id="reg-whatsapp" placeholder="+94771234567">
-</div>
-<div class="form-group">
-<label id="reg-ad">Address</label>
-<input type="text" id="reg-address" placeholder="Colombo, Sri Lanka">
-</div>
-<div class="form-group">
-<label id="reg-rl">Register As</label>
+<label>Register As</label>
 <select id="reg-role">
 <option value="customer">Customer (Buy Products)</option>
 <option value="seller">Seller / Dropshipper</option>
 </select>
 </div>
-<div class="form-group">
-<label id="reg-pw">Password</label>
-<input type="password" id="reg-password" placeholder="Min 6 characters">
-</div>
+<div class="form-group"><label>Password</label><input type="password" id="reg-password" placeholder="Min 6 characters"></div>
 <button class="btn btn-primary btn-full" onclick="doRegister()" id="reg-btn">Create Account</button>
-<p class="switch-text" id="reg-switch">
-Already have an account? <a onclick="switchToLogin()">Sign in</a>
-</p>
+<p class="switch-text">Already have an account? <a onclick="switchToLogin()">Sign in</a></p>
 </div>
 </div>
 
-<!-- FORGOT PASSWORD MODAL -->
+<!-- FORGOT MODAL -->
 <div class="modal-overlay" id="forgotModal">
 <div class="modal">
 <button class="close-btn" onclick="closeModal('forgotModal')">✕</button>
 <h2>Reset Password</h2>
 <p class="sub">Enter your email to receive a reset code</p>
 <div class="msg" id="forgot-msg"></div>
-<div class="form-group">
-<label>Email</label>
-<input type="email" id="forgot-email" placeholder="your@email.com">
-</div>
+<div class="form-group"><label>Email</label><input type="email" id="forgot-email" placeholder="your@email.com"></div>
 <div id="reset-code-section" style="display:none">
-<div class="form-group">
-<label>Reset Code</label>
-<input type="text" id="reset-code" placeholder="Enter 6-digit code">
-</div>
-<div class="form-group">
-<label>New Password</label>
-<input type="password" id="new-password" placeholder="New password">
-</div>
+<div class="form-group"><label>Reset Code</label><input type="text" id="reset-code" placeholder="6-digit code"></div>
+<div class="form-group"><label>New Password</label><input type="password" id="new-password" placeholder="New password"></div>
 </div>
 <button class="btn btn-primary btn-full" onclick="doForgot()" id="forgot-btn">Send Reset Code</button>
 <p class="switch-text"><a onclick="switchToLogin()">Back to Login</a></p>
@@ -407,249 +326,131 @@ Already have an account? <a onclick="switchToLogin()">Sign in</a>
 </footer>
 
 <script>
-const API = 'https://galaxy-mart-lyart.vercel.app';
+const API = '';
 let currentLang = 'en';
 let forgotStep = 1;
 
-const translations = {
-en: {
-'hero-title': "Sri Lanka's Smart Marketplace",
-'hero-sub': "Buy, sell, and deliver — all in one platform.",
-'hero-start': "Get Started Free",
-'hero-login': "Sign In",
-'feat-title': "Why Galaxy Mart?",
-'nav-login': "Login",
-'nav-register': "Register",
-'login-title': "Welcome Back",
-'login-sub': "Sign in to your Galaxy Mart account",
-'login-id-label': "Email or Username",
-'login-pw-label': "Password",
-'login-btn': "Sign In",
-'reg-title': "Join Galaxy Mart",
-'reg-sub': "Create your free account today",
-'reg-btn': "Create Account"
-},
-si: {
-'hero-title': "ශ්‍රී ලංකාවේ හොඳම Marketplace",
-'hero-sub': "මිලදී ගන්න, විකුණන්න, deliver කරන්න — එක platform එකෙන්.",
-'hero-start': "නොමිලේ ආරම්භ කරන්න",
-'hero-login': "ඇතුල් වන්න",
-'feat-title': "ඇයි Galaxy Mart?",
-'nav-login': "ඇතුල් වන්න",
-'nav-register': "ලියාපදිංචි වන්න",
-'login-title': "නැවත සාදරයෙන් පිළිගනිමු",
-'login-sub': "ඔබගේ Galaxy Mart ගිණුමට ඇතුල් වන්න",
-'login-id-label': "Email හෝ Username",
-'login-pw-label': "මුරපදය",
-'login-btn': "ඇතුල් වන්න",
-'reg-title': "Galaxy Mart හා එකතු වන්න",
-'reg-sub': "අද නොමිලේ ගිණුමක් හදන්න",
-'reg-btn': "ගිණුම හදන්න"
-},
-ta: {
-'hero-title': "இலங்கையின் சிறந்த Marketplace",
-'hero-sub': "வாங்க, விற்க, டெலிவரி செய்ய — ஒரே தளத்தில்.",
-'hero-start': "இலவசமாக தொடங்குங்கள்",
-'hero-login': "உள்நுழைக",
-'feat-title': "ஏன் Galaxy Mart?",
-'nav-login': "உள்நுழைக",
-'nav-register': "பதிவு செய்க",
-'login-title': "மீண்டும் வரவேற்கிறோம்",
-'login-sub': "உங்கள் கணக்கில் உள்நுழைக",
-'login-id-label': "Email அல்லது Username",
-'login-pw-label': "கடவுச்சொல்",
-'login-btn': "உள்நுழைக",
-'reg-title': "Galaxy Mart இல் சேருங்கள்",
-'reg-sub': "இன்று இலவச கணக்கு உருவாக்குங்கள்",
-'reg-btn': "கணக்கு உருவாக்கு"
-}
+const T = {
+en:{'hero-title':"Sri Lanka's Smart Marketplace",'hero-sub':"Buy, sell, and deliver — all in one platform.",'hero-start':"Get Started Free",'hero-login':"Sign In",'feat-title':"Why Galaxy Mart?",'nav-login':"Login",'nav-register':"Register",'login-title':"Welcome Back",'login-btn':"Sign In",'reg-title':"Join Galaxy Mart",'reg-btn':"Create Account"},
+si:{'hero-title':"ශ්‍රී ලංකාවේ හොඳම Marketplace",'hero-sub':"මිලදී ගන්න, විකුණන්න, deliver කරන්න.",'hero-start':"නොමිලේ ආරම්භ කරන්න",'hero-login':"ඇතුල් වන්න",'feat-title':"ඇයි Galaxy Mart?",'nav-login':"ඇතුල් වන්න",'nav-register':"ලියාපදිංචි වන්න",'login-title':"නැවත සාදරයෙන්",'login-btn':"ඇතුල් වන්න",'reg-title':"Galaxy Mart හා එකතු වන්න",'reg-btn':"ගිණුම හදන්න"},
+ta:{'hero-title':"இலங்கையின் சிறந்த Marketplace",'hero-sub':"வாங்க, விற்க, டெலிவரி செய்ய.",'hero-start':"இலவசமாக தொடங்குங்கள்",'hero-login':"உள்நுழைக",'feat-title':"ஏன் Galaxy Mart?",'nav-login':"உள்நுழைக",'nav-register':"பதிவு செய்க",'login-title':"மீண்டும் வரவேற்கிறோம்",'login-btn':"உள்நுழைக",'reg-title':"Galaxy Mart இல் சேருங்கள்",'reg-btn':"கணக்கு உருவாக்கு"}
 };
 
-function setLang(lang) {
-currentLang = lang;
-document.querySelectorAll('.lang-btn').forEach((b,i) => {
-b.classList.toggle('active', ['en','si','ta'][i] === lang);
-});
-const t = translations[lang];
-for(const [id, val] of Object.entries(t)) {
-const el = document.getElementById(id);
-if(el) el.textContent = val;
-}
+function setLang(lang){
+currentLang=lang;
+document.querySelectorAll('.lang-btn').forEach((b,i)=>{b.classList.toggle('active',['en','si','ta'][i]===lang);});
+const t=T[lang];
+for(const[id,val]of Object.entries(t)){const el=document.getElementById(id);if(el)el.textContent=val;}
 }
 
-function showLogin() {
-document.getElementById('loginModal').classList.add('show');
-}
-function showRegister() {
-document.getElementById('registerModal').classList.add('show');
-}
-function showForgot() {
-closeModal('loginModal');
-document.getElementById('forgotModal').classList.add('show');
-}
-function closeModal(id) {
-document.getElementById(id).classList.remove('show');
-}
-function switchToRegister() {
-closeModal('loginModal');
-showRegister();
-}
-function switchToLogin() {
-closeModal('registerModal');
-closeModal('forgotModal');
-showLogin();
+function showLogin(){document.getElementById('loginModal').classList.add('show');}
+function showRegister(){document.getElementById('registerModal').classList.add('show');}
+function showForgot(){closeModal('loginModal');document.getElementById('forgotModal').classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+function switchToRegister(){closeModal('loginModal');showRegister();}
+function switchToLogin(){closeModal('registerModal');closeModal('forgotModal');showLogin();}
+
+function showMsg(id,msg,type){
+const el=document.getElementById(id);
+el.textContent=msg;el.className='msg '+type;el.style.display='block';
 }
 
-function showMsg(id, msg, type) {
-const el = document.getElementById(id);
-el.textContent = msg;
-el.className = 'msg ' + type;
-el.style.display = 'block';
+async function doLogin(){
+const identifier=document.getElementById('login-identifier').value.trim();
+const password=document.getElementById('login-password').value;
+if(!identifier||!password)return showMsg('login-msg','Please fill all fields','error');
+const btn=document.getElementById('login-btn');
+btn.textContent='Signing in...';btn.disabled=true;
+try{
+const res=await fetch(`${API}/api/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({identifier,password})});
+const data=await res.json();
+if(data.success){
+localStorage.setItem('gm_token',data.token);
+localStorage.setItem('gm_user',JSON.stringify(data.user));
+showMsg('login-msg','Login successful!','success');
+setTimeout(()=>{
+const r=data.user.role;
+window.location.href=r==='admin'?'/frontend/admin.html':r==='seller'?'/frontend/seller.html':'/frontend/customer.html';
+},800);
+}else{showMsg('login-msg',data.error||'Login failed','error');}
+}catch(err){showMsg('login-msg','Connection error','error');}
+btn.textContent=T[currentLang]['login-btn']||'Sign In';btn.disabled=false;
 }
 
-async function doLogin() {
-const identifier = document.getElementById('login-identifier').value.trim();
-const password = document.getElementById('login-password').value;
-if(!identifier || !password) {
-return showMsg('login-msg','Please fill all fields','error');
-}
-const btn = document.getElementById('login-btn');
-btn.textContent = 'Signing in...';btn.disabled = true;
-try {
-const res = await fetch(`${API}/api/auth/login`, {
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body: JSON.stringify({identifier, password})
-});
-const data = await res.json();
-if(data.success) {
-localStorage.setItem('gm_token', data.token);
-localStorage.setItem('gm_user', JSON.stringify(data.user));
-showMsg('login-msg','Login successful! Redirecting...','success');
-setTimeout(() => {
-const role = data.user.role;
-if(role === 'admin') window.location.href = 'admin.html';
-else if(role === 'seller') window.location.href = 'seller.html';
-else window.location.href = 'customer.html';
-}, 1000);
-} else {
-showMsg('login-msg', data.error || 'Login failed','error');
-}
-} catch(err) {
-showMsg('login-msg','Connection error. Try again.','error');
-}
-btn.textContent = translations[currentLang]['login-btn'] || 'Sign In';
-btn.disabled = false;
-}
-
-async function doRegister() {
-const data = {
-first_name: document.getElementById('reg-firstname').value.trim(),
-last_name: document.getElementById('reg-lastname').value.trim(),
-username: document.getElementById('reg-username').value.trim(),
-email: document.getElementById('reg-email').value.trim(),
-phone: document.getElementById('reg-phone').value.trim(),
-whatsapp: document.getElementById('reg-whatsapp').value.trim(),
-address: document.getElementById('reg-address').value.trim(),
-role: document.getElementById('reg-role').value,
-password: document.getElementById('reg-password').value,
-preferred_language: currentLang
+async function doRegister(){
+const d={
+first_name:document.getElementById('reg-firstname').value.trim(),
+last_name:document.getElementById('reg-lastname').value.trim(),
+username:document.getElementById('reg-username').value.trim(),
+email:document.getElementById('reg-email').value.trim(),
+phone:document.getElementById('reg-phone').value.trim(),
+whatsapp:document.getElementById('reg-whatsapp').value.trim(),
+address:document.getElementById('reg-address').value.trim(),
+role:document.getElementById('reg-role').value,
+password:document.getElementById('reg-password').value,
+preferred_language:currentLang
 };
-if(!data.first_name||!data.username||!data.email||!data.password) {
-return showMsg('reg-msg','Please fill required fields','error');
-}
-if(data.password.length < 6) {
-return showMsg('reg-msg','Password must be at least 6 characters','error');
-}
-const btn = document.getElementById('reg-btn');
-btn.textContent = 'Creating...';btn.disabled = true;
-try {
-const res = await fetch(`${API}/api/auth/register`, {
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body: JSON.stringify(data)
-});
-const result = await res.json();
-if(result.success) {
-localStorage.setItem('gm_token', result.token);
-localStorage.setItem('gm_user', JSON.stringify(result.user));
-showMsg('reg-msg','Account created! Redirecting...','success');
-setTimeout(() => {
-const role = result.user.role;
-if(role === 'seller') window.location.href = 'seller.html';
-else window.location.href = 'customer.html';
-}, 1000);
-} else {
-showMsg('reg-msg', result.error || 'Registration failed','error');
-}
-} catch(err) {
-showMsg('reg-msg','Connection error. Try again.','error');
-}
-btn.textContent = translations[currentLang]['reg-btn'] || 'Create Account';
-btn.disabled = false;
+if(!d.first_name||!d.username||!d.email||!d.password)return showMsg('reg-msg','Please fill required fields','error');
+if(d.password.length<6)return showMsg('reg-msg','Password min 6 characters','error');
+const btn=document.getElementById('reg-btn');
+btn.textContent='Creating...';btn.disabled=true;
+try{
+const res=await fetch(`${API}/api/auth/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});
+const result=await res.json();
+if(result.success){
+localStorage.setItem('gm_token',result.token);
+localStorage.setItem('gm_user',JSON.stringify(result.user));
+showMsg('reg-msg','Account created!','success');
+setTimeout(()=>{
+const r=result.user.role;
+window.location.href=r==='seller'?'/frontend/seller.html':'/frontend/customer.html';
+},800);
+}else{showMsg('reg-msg',result.error||'Registration failed','error');}
+}catch(err){showMsg('reg-msg','Connection error','error');}
+btn.textContent=T[currentLang]['reg-btn']||'Create Account';btn.disabled=false;
 }
 
-async function doForgot() {
-if(forgotStep === 1) {
-const email = document.getElementById('forgot-email').value.trim();
-if(!email) return showMsg('forgot-msg','Enter your email','error');
-try {
-const res = await fetch(`${API}/api/auth/forgot-password`, {
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body: JSON.stringify({email})
-});
-const data = await res.json();
-if(data.success) {
+async function doForgot(){
+if(forgotStep===1){
+const email=document.getElementById('forgot-email').value.trim();
+if(!email)return showMsg('forgot-msg','Enter your email','error');
+try{
+const res=await fetch(`${API}/api/auth/forgot-password`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+const data=await res.json();
+if(data.success){
 showMsg('forgot-msg','Reset code sent!','success');
-document.getElementById('reset-code-section').style.display = 'block';
-document.getElementById('forgot-btn').textContent = 'Reset Password';
-forgotStep = 2;
-} else {
-showMsg('forgot-msg', data.error,'error');
-}
-} catch(err) {
-showMsg('forgot-msg','Error. Try again.','error');
-}
-} else {
-const email = document.getElementById('forgot-email').value.trim();
-const code = document.getElementById('reset-code').value.trim();
-const new_password = document.getElementById('new-password').value;
-try {
-const res = await fetch(`${API}/api/auth/reset-password`, {
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body: JSON.stringify({email, code, new_password})
-});
-const data = await res.json();
-if(data.success) {
+document.getElementById('reset-code-section').style.display='block';
+document.getElementById('forgot-btn').textContent='Reset Password';
+forgotStep=2;
+}else{showMsg('forgot-msg',data.error,'error');}
+}catch(err){showMsg('forgot-msg','Error. Try again.','error');}
+}else{
+const email=document.getElementById('forgot-email').value.trim();
+const code=document.getElementById('reset-code').value.trim();
+const new_password=document.getElementById('new-password').value;
+try{
+const res=await fetch(`${API}/api/auth/reset-password`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,code,new_password})});
+const data=await res.json();
+if(data.success){
 showMsg('forgot-msg','Password reset! Please login.','success');
-setTimeout(() => { closeModal('forgotModal'); showLogin(); }, 1500);
-} else {
-showMsg('forgot-msg', data.error,'error');
-}
-} catch(err) {
-showMsg('forgot-msg','Error. Try again.','error');
-}
+setTimeout(()=>{closeModal('forgotModal');showLogin();},1500);
+}else{showMsg('forgot-msg',data.error,'error');}
+}catch(err){showMsg('forgot-msg','Error. Try again.','error');}
 }
 }
 
-// Check if already logged in
-window.addEventListener('load', () => {
-const user = localStorage.getItem('gm_user');
-if(user) {
-const u = JSON.parse(user);
-if(u.role === 'admin') window.location.href = 'frontend/admin.html';
-else if(u.role === 'seller') window.location.href = 'frontend/seller.html';
-else window.location.href = 'frontend/customer.html';
+window.addEventListener('load',()=>{
+const user=localStorage.getItem('gm_user');
+if(user){
+try{
+const u=JSON.parse(user);
+window.location.href=u.role==='admin'?'/frontend/admin.html':u.role==='seller'?'/frontend/seller.html':'/frontend/customer.html';
+}catch(e){localStorage.clear();}
 }
 });
 
-// Close modal on outside click
-document.querySelectorAll('.modal-overlay').forEach(m => {
-m.addEventListener('click', e => {
-if(e.target === m) m.classList.remove('show');
-});
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show');});
 });
 </script>
 </body>
