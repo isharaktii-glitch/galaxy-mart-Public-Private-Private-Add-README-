@@ -361,6 +361,40 @@ input:checked + .slider:before{transform:translateX(20px);}
 </div>
 
 <script>
+
+  async function saveCategory() {
+  const catName = document.getElementById('new-cat-name').value;
+  
+  if (!catName) {
+    alert("කරුණාකර Category නම ඇතුළත් කරන්න!");
+    return;
+  }
+
+  try {
+    // API එකට දත්ත යැවීම
+    const response = await fetch('/api/admin/categories', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('gm_token') // ඉතා වැදගත්!
+      },
+      body: JSON.stringify({ name: catName })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      alert('Category සාර්ථකව ඇතුළත් විය!');
+      document.getElementById('new-cat-name').value = ''; // Input එක හිස් කිරීම
+    } else {
+      alert('දෝෂයක් සිදුවිය: ' + (data.error || 'නැවත උත්සාහ කරන්න'));
+    }
+  } catch (err) {
+    console.error('Error:', err);
+    alert('සර්වර් එක සමඟ සම්බන්ධ වීමට නොහැක.');
+  }
+}
+
   async function saveCategory() {
     const catName = document.getElementById('new-cat-name').value;
     
