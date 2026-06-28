@@ -1,46 +1,50 @@
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
-dotenv.config();
+require('dotenv').config();
 
 const app = express();
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.urlencoded({ extended: true }));
+
+// Health check - මුලින්ම test කරන්න
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Galaxy Mart API Running ✅',
+    timestamp: new Date().toISOString(),
+    db: process.env.DATABASE_URL ? 'configured' : 'missing'
+  });
+});
 
 // Routes
-const authRoutes = require('./routes/auth');
-const adminRoutes = require('./routes/admin');
-const sellerRoutes = require('./routes/seller');
-const customerRoutes = require('./routes/customer');
-const productRoutes = require('./routes/products');
-const orderRoutes = require('./routes/orders');
+try {
+  app.use('/api/auth', require('./routes/auth'));
+  app.use('/api/admin', require('./routes/admin'));
+  app.use('/api/seller', require('./routes/seller'));
+  app.use('/api/customer', require('./routes/customer'));
+  app.use('/api/products', require('./routes/products'));
+  app.use('/api/orders', require('./routes/orders'));
+} catch(err) {
+  console.error('Route loading error:', err.message);
+}
 
-app.use('/api/auth', authRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/seller', sellerRoutes);
-app.use('/api/customer', customerRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/orders', orderRoutes);
-
-// Health check
-app.get('/', (req, res) => {
-  res.json({ message: 'Galaxy Mart API Running ✅' });
-});
-
-// 404 Handler
+// 404
 app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+  res.status(404).json({ error: 'Route not found', path: req.path });
 });
 
-// Error Handler
+// Error handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Internal server error' });
+  console.error('Error:', err.message);
+  res.status(500).json({ error: err.message });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Galaxy Mart Server running on port ${PORT}`);
-});
+module.exports = app;
+
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
