@@ -716,5 +716,25 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
 
 loadDashboard();
 </script>
+<script>
+  // පිටුව Load වන විටම ටෝකන් එකක් තිබේදැයි පරීක්ෂා කිරීම
+  const token = localStorage.getItem('token');
+  const role = localStorage.getItem('user_role');
+
+  // දැනට ඉන්නේ මොන පිටුවේදැයි බලා ආරක්ෂාව තහවුරු කිරීම
+  const currentPage = window.location.pathname;
+
+  if (!token) {
+    alert('Access Denied! Please login first.');
+    window.location.href = '/index.html';
+  } else if (currentPage.includes('seller') && role !== 'seller' && role !== 'admin') {
+    alert('Sellers Only!');
+    window.location.href = '/index.html';
+  } else if (currentPage.includes('admin') && role !== 'admin') {
+    alert('Admins Only!');
+    window.location.href = '/index.html';
+  }
+</script>
+
 </body>
 </html>
