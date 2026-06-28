@@ -9,7 +9,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Health check - මුලින්ම test කරන්න
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
   res.json({ 
     message: 'Galaxy Mart API Running ✅',
     timestamp: new Date().toISOString(),
