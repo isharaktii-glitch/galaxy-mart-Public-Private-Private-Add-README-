@@ -15,7 +15,7 @@ router.get('/users', verifyToken, isAdmin, async (req, res) => {
       params.push(role);
       query += ` AND role=$${params.length}`;
     }
-    if (search) {
+if (search) {
       params.push(`%${search}%`);
       const i1 = params.length;
       params.push(`%${search}%`);
