@@ -1,22 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
-const { verifyToken } = require('../middleware/auth');
+const { verifyToken, isAdmin } = require('../middleware/auth');
 
-// GET ALL PUBLIC PRODUCTS
+router.get('/categories/all', async (req, res) => {
+  try {
+    const result = await db.query(
+      'SELECT * FROM categories WHERE is_active=true ORDER BY name_en ASC'
+    );
+    res.json({ success: true, categories: result.rows });
+  } catch (err) {
+    console.error('Categories error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.get('/', async (req, res) => {
   try {
-    const { category_id, search, lang } = req.query;
+    const { category_id, search } = req.query;
     let query = `
-      SELECT p.*,
+      SELECT p.*, 
         c.name_en as category_name,
-        c.name_si as category_name_si,
-        c.name_ta as category_name_ta,
         u.username as seller_name
       FROM products p
       LEFT JOIN categories c ON p.category_id=c.id
       LEFT JOIN users u ON p.seller_id=u.id
-      WHERE p.status='active' AND c.is_active=true
+      WHERE p.status='active'
     `;
     const params = [];
 
@@ -24,33 +33,30 @@ router.get('/', async (req, res) => {
       params.push(category_id);
       query += ` AND p.category_id=$${params.length}`;
     }
-
     if (search) {
       params.push(`%${search}%`);
-      query += ` AND (p.name_en ILIKE $${params.length}
-                 OR p.name_si ILIKE $${params.length}
-                 OR p.name_ta ILIKE $${params.length})`;
+      query += ` AND p.name_en ILIKE $${params.length}`;
     }
 
     query += ' ORDER BY p.created_at DESC';
     const result = await db.query(query, params);
     res.json({ success: true, products: result.rows });
   } catch (err) {
-    res.status(500).json({ error: 'Failed' });
+    console.error('Products error:', err);
+    res.status(500).json({ error: err.message });
   }
 });
 
-// GET SINGLE PRODUCT
 router.get('/:id', async (req, res) => {
   try {
     const result = await db.query(
-      `SELECT p.*,
+      `SELECT p.*, 
         c.name_en as category_name,
         u.username as seller_name
        FROM products p
        LEFT JOIN categories c ON p.category_id=c.id
        LEFT JOIN users u ON p.seller_id=u.id
-       WHERE p.id=$1 AND p.status='active'`,
+       WHERE p.id=$1`,
       [req.params.id]
     );
     if (result.rows.length === 0) {
@@ -58,39 +64,20 @@ router.get('/:id', async (req, res) => {
     }
     res.json({ success: true, product: result.rows[0] });
   } catch (err) {
-    res.status(500).json({ error: 'Failed' });
+    res.status(500).json({ error: err.message });
   }
 });
 
-// GET ALL CATEGORIES (public)
-router.get('/categories/all', async (req, res) => {
+router.put('/:id/status', verifyToken, isAdmin, async (req, res) => {
   try {
-    const result = await db.query(
-      `SELECT * FROM categories 
-       WHERE is_active=true 
-       ORDER BY name_en ASC`
+    const { status } = req.body;
+    await db.query(
+      'UPDATE products SET status=$1, updated_at=NOW() WHERE id=$2',
+      [status, req.params.id]
     );
-    res.json({ success: true, categories: result.rows });
+    res.json({ success: true });
   } catch (err) {
-    res.status(500).json({ error: 'Failed' });
-  }
-});
-
-// GET PRODUCTS BY CATEGORY
-router.get('/category/:id', async (req, res) => {
-  try {
-    const result = await db.query(
-      `SELECT p.*,
-        u.username as seller_name
-       FROM products p
-       LEFT JOIN users u ON p.seller_id=u.id
-       WHERE p.category_id=$1 AND p.status='active'
-       ORDER BY p.created_at DESC`,
-      [req.params.id]
-    );
-    res.json({ success: true, products: result.rows });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed' });
+    res.status(500).json({ error: err.message });
   }
 });
 
