@@ -3,7 +3,6 @@ const router = express.Router();
 const db = require('../db');
 const { verifyToken, isAdmin } = require('../middleware/auth');
 
-// ADMIN - GET ALL ORDERS (must be BEFORE /:id routes)
 router.get('/', verifyToken, isAdmin, async (req, res) => {
   try {
     const { status, payment_status, search } = req.query;
@@ -28,8 +27,10 @@ router.get('/', verifyToken, isAdmin, async (req, res) => {
     }
     if (search) {
       params.push(`%${search}%`);
-      query += ` AND (u.username ILIKE $${params.length}
-                 OR s.username ILIKE $${params.length})`;
+      const i1 = params.length;
+      params.push(`%${search}%`);
+      const i2 = params.length;
+      query += ` AND (u.username ILIKE $${i1} OR s.username ILIKE $${i2})`;
     }
 
     query += ' ORDER BY o.created_at DESC';
@@ -41,7 +42,6 @@ router.get('/', verifyToken, isAdmin, async (req, res) => {
   }
 });
 
-// TRACK ORDER STATUS (must be BEFORE /:id)
 router.get('/:id/track', verifyToken, async (req, res) => {
   try {
     const result = await db.query(
@@ -55,12 +55,10 @@ router.get('/:id/track', verifyToken, async (req, res) => {
     }
     res.json({ success: true, order: result.rows[0] });
   } catch (err) {
-    console.error('Track error:', err);
     res.status(500).json({ error: err.message });
   }
 });
 
-// GET ORDER DETAILS (last, because /:id catches everything)
 router.get('/:id', verifyToken, async (req, res) => {
   try {
     const order = await db.query(
@@ -102,7 +100,6 @@ router.get('/:id', verifyToken, async (req, res) => {
 
     res.json({ success: true, order: o, items: items.rows });
   } catch (err) {
-    console.error('Order detail error:', err);
     res.status(500).json({ error: err.message });
   }
 });
