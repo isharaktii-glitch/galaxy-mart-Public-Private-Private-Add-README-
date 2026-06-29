@@ -1,26 +1,30 @@
 {
   "version": 2,
+  "functions": {
+    "server.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "rewrites": [
     {
       "source": "/api/(.*)",
       "destination": "/server.js"
     },
     {
-      "source": "/",
-      "destination": "/frontend/index.html"
+      "source": "/(.*)\\.(js|css|png|jpg|jpeg|svg|ico|json|woff2|woff|ttf|eot|map)",
+      "destination": "/frontend/$1.$2"
     },
     {
       "source": "/(.*)\\.html",
       "destination": "/frontend/$1.html"
     },
     {
+      "source": "/",
+      "destination": "/frontend/index.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/frontend/$1"
     }
-  ],
-  "env": {
-    "DATABASE_URL": "@database_url",
-    "JWT_SECRET": "@jwt_secret",
-    "NODE_ENV": "production"
-  }
+  ]
 }
