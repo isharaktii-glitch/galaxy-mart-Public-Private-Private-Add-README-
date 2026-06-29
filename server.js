@@ -5,55 +5,38 @@ require('dotenv').config();
 
 const app = express();
 
-// Middleware
-app.use(cors({
-  origin: '*', // Allow all origins (change in production)
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Log all requests
-app.use((req, res, next) => {
-  console.log(`📝 ${req.method} ${req.url}`);
-  next();
-});
-
-// Serve frontend static files
 app.use(express.static(path.join(__dirname, 'frontend')));
 
-// API Routes
-const routes = {
-  auth: './routes/auth',
-  admin: './routes/admin',
-  seller: './routes/seller',
-  customer: './routes/customer',
-  products: './routes/products',
-  orders: './routes/orders',
-  auction: './routes/auction',
-  ads: './routes/ads'
-};
+// Routes Import (ඔක්කොම import කරන්න)
+const authRoutes = require('./routes/auth');
+const adminRoutes = require('./routes/admin');
+const sellerRoutes = require('./routes/seller');
+const customerRoutes = require('./routes/customer');
+const productRoutes = require('./routes/products');
+const orderRoutes = require('./routes/orders');
+const auctionRoutes = require('./routes/auction');
+const adsRoutes = require('./routes/ads'); // ✅ මෙය එකතු කරන්න
 
-Object.entries(routes).forEach(([name, routePath]) => {
-  try {
-    const route = require(routePath);
-    app.use(`/api/${name}`, route);
-    console.log(`✅ Route /api/${name} loaded`);
-  } catch (err) {
-    console.error(`❌ Failed to load route /api/${name}:`, err.message);
-  }
-});
+// Routes Use
+app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/seller', sellerRoutes);
+app.use('/api/customer', customerRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/auctions', auctionRoutes);
+app.use('/api/ads', adsRoutes); // ✅ මෙය එකතු කරන්න
 
-// Health check endpoint
+// Health Check
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    timestamp: new Date().toISOString(),
-    env: process.env.NODE_ENV || 'development'
-  });
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Test database connection endpoint
+// Database Test
 app.get('/api/db-test', async (req, res) => {
   try {
     const db = require('./db');
@@ -64,30 +47,15 @@ app.get('/api/db-test', async (req, res) => {
   }
 });
 
-// Serve index.html for all other routes (SPA support)
+// Catch-all: Frontend
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
 });
 
-// Global error handler
+// Error Handler
 app.use((err, req, res, next) => {
-  console.error('❌ Global error:', err.message);
-  console.error(err.stack);
-  res.status(500).json({ 
-    success: false, 
-    error: err.message || 'Internal server error',
-    path: req.path
-  });
+  console.error('Server Error:', err.message);
+  res.status(500).json({ success: false, error: err.message });
 });
 
-// Export for Vercel
 module.exports = app;
-
-// Start server if not in Vercel environment
-if (require.main === module) {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`🚀 Galaxy Mart Server running on port ${PORT}`);
-    console.log(`🔗 http://localhost:${PORT}`);
-  });
-}
