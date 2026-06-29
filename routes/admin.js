@@ -10,12 +10,11 @@ router.get('/users', verifyToken, isAdmin, async (req, res) => {
                  whatsapp, address, role, status, kyc_status, 
                  phone_verified, created_at FROM users WHERE 1=1`;
     const params = [];
-
     if (role) {
       params.push(role);
       query += ` AND role=$${params.length}`;
     }
-if (search) {
+    if (search) {
       params.push(`%${search}%`);
       const i1 = params.length;
       params.push(`%${search}%`);
@@ -107,10 +106,8 @@ router.put('/markup', verifyToken, isAdmin, async (req, res) => {
       reseller_commission_percent, delivery_commission_percent,
       type, reference_id
     } = req.body;
-
     const markupType = type || 'global';
     const exists = await db.query('SELECT id FROM markup_settings WHERE type=$1', [markupType]);
-
     if (exists.rows.length > 0) {
       await db.query(
         `UPDATE markup_settings SET 
