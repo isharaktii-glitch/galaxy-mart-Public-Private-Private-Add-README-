@@ -1,7 +1,7 @@
 const { Pool } = require('pg');
 
 if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL environment variable is not set');
+  throw new Error('DATABASE_URL not set');
 }
 
 const pool = new Pool({
@@ -12,16 +12,11 @@ const pool = new Pool({
   connectionTimeoutMillis: 10000,
 });
 
-pool.on('error', (err) => {
-  console.error('Unexpected database error:', err.message);
-});
-
 module.exports = {
   query: async (text, params) => {
     const client = await pool.connect();
     try {
-      const result = await client.query(text, params);
-      return result;
+      return await client.query(text, params);
     } finally {
       client.release();
     }
