@@ -3,7 +3,64 @@ const router = express.Router();
 const db = require('../db');
 const { verifyToken, isAdmin } = require('../middleware/auth');
 
-// GET ORDER DETAILS
+// ADMIN - GET ALL ORDERS (must be BEFORE /:id routes)
+router.get('/', verifyToken, isAdmin, async (req, res) => {
+  try {
+    const { status, payment_status, search } = req.query;
+    let query = `
+      SELECT o.*,
+        u.username as customer_name,
+        s.username as seller_name
+      FROM orders o
+      LEFT JOIN users u ON o.customer_id=u.id
+      LEFT JOIN users s ON o.seller_id=s.id
+      WHERE 1=1
+    `;
+    const params = [];
+
+    if (status) {
+      params.push(status);
+      query += ` AND o.status=$${params.length}`;
+    }
+    if (payment_status) {
+      params.push(payment_status);
+      query += ` AND o.payment_status=$${params.length}`;
+    }
+    if (search) {
+      params.push(`%${search}%`);
+      query += ` AND (u.username ILIKE $${params.length}
+                 OR s.username ILIKE $${params.length})`;
+    }
+
+    query += ' ORDER BY o.created_at DESC';
+    const result = await db.query(query, params);
+    res.json({ success: true, orders: result.rows });
+  } catch (err) {
+    console.error('Orders fetch error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// TRACK ORDER STATUS (must be BEFORE /:id)
+router.get('/:id/track', verifyToken, async (req, res) => {
+  try {
+    const result = await db.query(
+      `SELECT id, status, rejection_reason,
+        payment_status, created_at, updated_at
+       FROM orders WHERE id=$1`,
+      [req.params.id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    res.json({ success: true, order: result.rows[0] });
+  } catch (err) {
+    console.error('Track error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET ORDER DETAILS (last, because /:id catches everything)
 router.get('/:id', verifyToken, async (req, res) => {
   try {
     const order = await db.query(
@@ -35,7 +92,6 @@ router.get('/:id', verifyToken, async (req, res) => {
     );
 
     const o = order.rows[0];
-    const allowedRoles = ['admin'];
     if (
       req.user.role !== 'admin' &&
       o.customer_id !== req.user.id &&
@@ -44,68 +100,10 @@ router.get('/:id', verifyToken, async (req, res) => {
       return res.status(403).json({ error: 'Unauthorized' });
     }
 
-    res.json({
-      success: true,
-      order: o,
-      items: items.rows
-    });
+    res.json({ success: true, order: o, items: items.rows });
   } catch (err) {
-    res.status(500).json({ error: 'Failed' });
-  }
-});
-
-// TRACK ORDER STATUS
-router.get('/:id/track', verifyToken, async (req, res) => {
-  try {
-    const result = await db.query(
-      `SELECT id, status, rejection_reason,
-        payment_status, created_at, updated_at
-       FROM orders WHERE id=$1`,
-      [req.params.id]
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Order not found' });
-    }
-    res.json({ success: true, order: result.rows[0] });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed' });
-  }
-});
-
-// ADMIN - GET ALL ORDERS WITH FILTERS
-router.get('/', verifyToken, isAdmin, async (req, res) => {
-  try {
-    const { status, payment_status, search } = req.query;
-    let query = `
-      SELECT o.*,
-        u.username as customer_name,
-        s.username as seller_name
-       FROM orders o
-       LEFT JOIN users u ON o.customer_id=u.id
-       LEFT JOIN users s ON o.seller_id=s.id
-       WHERE 1=1
-    `;
-    const params = [];
-
-    if (status) {
-      params.push(status);
-      query += ` AND o.status=$${params.length}`;
-    }
-    if (payment_status) {
-      params.push(payment_status);
-      query += ` AND o.payment_status=$${params.length}`;
-    }
-    if (search) {
-      params.push(`%${search}%`);
-      query += ` AND (u.username ILIKE $${params.length}
-                 OR s.username ILIKE $${params.length})`;
-    }
-
-    query += ' ORDER BY o.created_at DESC';
-    const result = await db.query(query, params);
-    res.json({ success: true, orders: result.rows });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed' });
+    console.error('Order detail error:', err);
+    res.status(500).json({ error: err.message });
   }
 });
 
