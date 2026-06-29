@@ -5,43 +5,89 @@ require('dotenv').config();
 
 const app = express();
 
-app.use(cors());
+// Middleware
+app.use(cors({
+  origin: '*', // Allow all origins (change in production)
+  credentials: true
+}));
 app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Log all requests
+app.use((req, res, next) => {
+  console.log(`📝 ${req.method} ${req.url}`);
+  next();
+});
 
 // Serve frontend static files
 app.use(express.static(path.join(__dirname, 'frontend')));
 
 // API Routes
-try {
-  app.use('/api/auth', require('./routes/auth'));
-  app.use('/api/admin', require('./routes/admin'));
-  app.use('/api/seller', require('./routes/seller'));
-  app.use('/api/customer', require('./routes/customer'));
-  app.use('/api/products', require('./routes/products'));
-  app.use('/api/orders', require('./routes/orders'));
-  app.use('/api/auctions', require('./routes/auction'));
-app.use('/api/ads', require('./routes/ads'));
-} catch(err) {
-  console.error('Route error:', err.message);
-}
+const routes = {
+  auth: './routes/auth',
+  admin: './routes/admin',
+  seller: './routes/seller',
+  customer: './routes/customer',
+  products: './routes/products',
+  orders: './routes/orders',
+  auction: './routes/auction',
+  ads: './routes/ads'
+};
 
-app.get('/api', (req, res) => {
-  res.json({ message: 'Galaxy Mart API Running ✅' });
+Object.entries(routes).forEach(([name, routePath]) => {
+  try {
+    const route = require(routePath);
+    app.use(`/api/${name}`, route);
+    console.log(`✅ Route /api/${name} loaded`);
+  } catch (err) {
+    console.error(`❌ Failed to load route /api/${name}:`, err.message);
+  }
 });
 
-// Serve index.html for all other routes
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    env: process.env.NODE_ENV || 'development'
+  });
+});
+
+// Test database connection endpoint
+app.get('/api/db-test', async (req, res) => {
+  try {
+    const db = require('./db');
+    const result = await db.query('SELECT NOW() as now');
+    res.json({ success: true, time: result.rows[0].now });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Serve index.html for all other routes (SPA support)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
 });
 
+// Global error handler
 app.use((err, req, res, next) => {
-  res.status(500).json({ error: err.message });
+  console.error('❌ Global error:', err.message);
+  console.error(err.stack);
+  res.status(500).json({ 
+    success: false, 
+    error: err.message || 'Internal server error',
+    path: req.path
+  });
 });
 
+// Export for Vercel
 module.exports = app;
 
+// Start server if not in Vercel environment
 if (require.main === module) {
   const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => console.log(`Server on port ${PORT}`));
+  app.listen(PORT, () => {
+    console.log(`🚀 Galaxy Mart Server running on port ${PORT}`);
+    console.log(`🔗 http://localhost:${PORT}`);
+  });
 }
